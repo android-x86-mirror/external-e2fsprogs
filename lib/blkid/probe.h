@@ -793,7 +793,8 @@ _INLINE_ __u64 blkid_swab64(__u64 val)
 }
 #endif
 
-
+unsigned char *blkid_probe_get_buffer(struct blkid_probe *pr,
+			  blkid_loff_t off, size_t len);
 
 #ifdef WORDS_BIGENDIAN
 #define blkid_le16(x) blkid_swab16(x)

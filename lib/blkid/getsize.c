@@ -9,7 +9,9 @@
  * %End-Header%
  */
 
+#ifndef _LARGEFILE_SOURCE
 #define _LARGEFILE_SOURCE
+#endif
 #define _LARGEFILE64_SOURCE
 
 /* include this before sys/queues.h! */

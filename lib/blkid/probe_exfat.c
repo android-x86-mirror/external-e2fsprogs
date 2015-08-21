@@ -125,38 +125,6 @@ static struct exfat_entry_label *find_label(blkid_probe pr,
 	}
 }
 
-static void unicode_16le_to_utf8(char *s, int out_len,
-				 const unsigned char *buf, int in_len)
-{
-	int i, j;
-	unsigned int c;
-	unsigned char *str = (unsigned char *)s;
-
-	for (i = j = 0; i + 2 <= in_len; i += 2) {
-		c = (buf[i+1] << 8) | buf[i];
-		if (c == 0) {
-			str[j] = '\0';
-			break;
-		} else if (c < 0x80) {
-			if (j+1 >= out_len)
-				break;
-			str[j++] = (unsigned char) c;
-		} else if (c < 0x800) {
-			if (j+2 >= out_len)
-				break;
-			str[j++] = (unsigned char) (0xc0 | (c >> 6));
-			str[j++] = (unsigned char) (0x80 | (c & 0x3f));
-		} else {
-			if (j+3 >= out_len)
-				break;
-			str[j++] = (unsigned char) (0xe0 | (c >> 12));
-			str[j++] = (unsigned char) (0x80 | ((c >> 6) & 0x3f));
-			str[j++] = (unsigned char) (0x80 | (c & 0x3f));
-		}
-	}
-	str[j] = '\0';
-}
-
 int probe_exfat(struct blkid_probe *probe,
 		      struct blkid_magic *id __BLKID_ATTR((unused)),
 		      unsigned char *buf)

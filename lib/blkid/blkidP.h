@@ -186,6 +186,10 @@ extern int blkid_set_tag(blkid_dev dev, const char *name,
 extern blkid_dev blkid_new_dev(void);
 extern void blkid_free_dev(blkid_dev dev);
 
+/* probe.c */
+extern void unicode_16le_to_utf8(char *s, int out_len,
+				  const unsigned char *buf, int in_len);
+
 #ifdef __cplusplus
 }
 #endif

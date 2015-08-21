@@ -63,37 +63,6 @@ struct f2fs_super_block {				/* According to version 1.1 */
 #endif
 } __attribute__((packed));
 
-static void unicode_16le_to_utf8(unsigned char *str, int out_len,
-				 const unsigned char *buf, int in_len)
-{
-	int i, j;
-	unsigned int c;
-
-	for (i = j = 0; i + 2 <= in_len; i += 2) {
-		c = (buf[i+1] << 8) | buf[i];
-		if (c == 0) {
-			str[j] = '\0';
-			break;
-		} else if (c < 0x80) {
-			if (j+1 >= out_len)
-				break;
-			str[j++] = (unsigned char) c;
-		} else if (c < 0x800) {
-			if (j+2 >= out_len)
-				break;
-			str[j++] = (unsigned char) (0xc0 | (c >> 6));
-			str[j++] = (unsigned char) (0x80 | (c & 0x3f));
-		} else {
-			if (j+3 >= out_len)
-				break;
-			str[j++] = (unsigned char) (0xe0 | (c >> 12));
-			str[j++] = (unsigned char) (0x80 | ((c >> 6) & 0x3f));
-			str[j++] = (unsigned char) (0x80 | (c & 0x3f));
-		}
-	}
-	str[j] = '\0';
-}
-
 int probe_f2fs(struct blkid_probe *probe,
 		      struct blkid_magic *id __BLKID_ATTR((unused)),
 		      unsigned char *buf)
@@ -114,7 +83,7 @@ int probe_f2fs(struct blkid_probe *probe,
 		return 0;
 
 	if (*((unsigned char *) sb->volume_name)) {
-		unsigned char utf8_label[512];
+		char utf8_label[512];
 		unicode_16le_to_utf8(utf8_label, sizeof(utf8_label),
 			(unsigned char *) sb->volume_name, sizeof(sb->volume_name));
 		blkid_set_tag(probe->dev, "LABEL", utf8_label, 0);
